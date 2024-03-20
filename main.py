@@ -1,5 +1,5 @@
 LIGHT_TIME = 250000
-REPEAT = 2
+REPEAT = 4
 
 PINS = [
     DigitalPin.P0,
@@ -11,31 +11,34 @@ PINS = [
     DigitalPin.P6,
     DigitalPin.P7,
     DigitalPin.P8,
-    DigitalPin.P9,
-]
+    DigitalPin.P9
+    ]
 
-def repeat(times, action):
-    for i in range(times):
-        action()
+def flash_led(pin):
+    pins.digital_write_pin(PINS[pin], 1)
+    control.wait_micros(LIGHT_TIME)
+    pins.digital_write_pin(PINS[pin], 0)
 
 def forward():
-    for pin in PINS.reverse():
-        pins.digital_write_pin(pin, 1)
-        control.wait_micros(LIGHT_TIME)
-        pins.digital_write_pin(pin, 0)
+    for i in range(REPEAT):
+        for pin in range(PINS.length):
+                flash_led(pin)
 
 def backward():
-    for pin in PINS.reverse():
-        pins.digital_write_pin(pin, 1)
-        control.wait_micros(LIGHT_TIME)
-        pins.digital_write_pin(pin, 0)
+    for i in range(REPEAT):
+        for pin in range(PINS.length -1, -1, -1):
+            flash_led(pin)
 
+def back_and_forth():
+    for i in range(REPEAT):
+        forward()
+        for pin in range(PINS.length -2, 0, -1): 
+            flash_led(pin)
+
+led.enable(False)
 
 def on_forever():
-    led.enable(False)
-    for i in range(2):
-        forward()
-    
-    control.wait_micros(1000000)
-
+    forward()
+    backward()  
+    back_and_forth()
 basic.forever(on_forever)
